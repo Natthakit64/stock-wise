@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เทคนิคการเทรด — StockWise</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .learn-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+      align-items: start;
+    }
+    .sidebar { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; position:sticky; top:84px; }
+    .sidebar-title { font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-light); font-weight:600; margin-bottom:1rem; }
+    .sidebar-section { margin-bottom:1.5rem; }
+    .sidebar-section-label { font-size:0.8rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem; }
+    .sidebar-link { display:flex; align-items:center; gap:0.6rem; text-decoration:none; color:var(--text-muted); font-size:0.875rem; padding:0.45rem 0.6rem; border-radius:var(--radius-sm); transition:all 0.15s; }
+    .sidebar-link:hover, .sidebar-link.active { color:var(--accent-dark); background:var(--egg); }
+
+    .article h2 { font-family:'Playfair Display',serif; font-size:1.6rem; color:var(--accent-dark); margin:2.5rem 0 0.75rem; scroll-margin-top:84px; }
+    .article h3 { font-size:1.1rem; font-weight:600; color:var(--text); margin:1.5rem 0 0.5rem; }
+    .article p { color:var(--text-muted); line-height:1.85; margin-bottom:1rem; font-size:0.95rem; }
+
+    .info-box { background:var(--egg); border:1px solid var(--border); border-left:4px solid var(--accent-light); border-radius:var(--radius-sm); padding:1rem 1.25rem; margin:1.25rem 0; font-size:0.9rem; color:var(--text); line-height:1.7; }
+
+    .step-list { counter-reset:step; list-style:none; margin:1rem 0; }
+    .step-list li {
+      counter-increment: step;
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .step-list li::before {
+      content: counter(step);
+      min-width: 28px; height: 28px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .risk-table { width:100%; border-collapse:collapse; font-size:0.875rem; margin:1rem 0; }
+    .risk-table th { background:var(--egg); color:var(--accent-dark); font-weight:700; padding:0.6rem 1rem; text-align:left; border-bottom:2px solid var(--border); }
+    .risk-table td { padding:0.6rem 1rem; border-bottom:1px solid var(--border); color:var(--text-muted); }
+    .risk-table tr:last-child td { border-bottom:none; }
+
+    .indicator-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      margin: 0.75rem 0;
+    }
+    .indicator-card h4 { font-weight:700; color:var(--text); margin-bottom:0.35rem; }
+    .indicator-card p { font-size:0.875rem; color:var(--text-muted); margin:0; line-height:1.6; }
+
+    @media (max-width:900px) { .learn-grid { grid-template-columns:1fr; } .sidebar { position:static; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Stock<span>Wise</span></a>
+    <div class="nav-toggle"><span></span><span></span><span></span></div>
+    <ul class="nav-links">
+      <li><a href="index.html">หน้าแรก</a></li>
+      <li><a href="learn.html" class="active">ความรู้การเทรด</a></li>
+      <li><a href="stocks.html">รายการหุ้น</a></li>
+      <li><a href="chat.html" class="nav-cta">💬 แชทกับ AI</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>⚡ เทคนิคการเทรด</h1>
+  <p>กลยุทธ์และวิธีการที่ใช้ได้จริงในตลาดหุ้น</p>
+</div>
+
+<div class="learn-grid">
+  <aside class="sidebar">
+    <div class="sidebar-title">เนื้อหาในหน้านี้</div>
+    <div class="sidebar-section">
+      <a href="#trend" class="sidebar-link">⚡ Trend Following</a>
+      <a href="#breakout" class="sidebar-link">🚀 Breakout Trading</a>
+      <a href="#rsi" class="sidebar-link">🎯 RSI & Indicators</a>
+      <a href="#risk" class="sidebar-link">🛡️ Risk Management</a>
+      <a href="#position" class="sidebar-link">📐 Position Sizing</a>
+      <a href="#stoploss" class="sidebar-link">✂️ Stop Loss</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">หน้าอื่น ๆ</div>
+      <a href="learn.html" class="sidebar-link">← กลับหน้ารวม</a>
+      <a href="learn-chart.html" class="sidebar-link">📊 การอ่านกราฟ</a>
+    </div>
+  </aside>
+
+  <article class="article">
+
+    <!-- Trend Following -->
+    <section id="trend">
+      <h2>⚡ Trend Following</h2>
+      <p>
+        "เทรดตามแนวโน้ม" เป็นหลักการพื้นฐานที่สุดในการเทรด ราคาหุ้นมักเคลื่อนไหว
+        เป็นแนวโน้มที่ต่อเนื่อง — ขาขึ้นก็มักขึ้นต่อ ขาลงก็มักลงต่อ
+      </p>
+
+      <div class="info-box">
+        💡 <strong>"The trend is your friend"</strong> — กฎทองของการเทรด
+        อย่าสวนกระแส เพราะโอกาสผิดสูงกว่าถูก
+      </div>
+
+      <h3>วิธีหาแนวโน้ม</h3>
+      <ul class="step-list">
+        <li>
+          <div>
+            <strong>ดู Higher High & Higher Low</strong><br/>
+            <span style="font-size:0.875rem;color:var(--text-muted)">
+              ขาขึ้น = ราคา High ใหม่สูงกว่าเดิม + Low ใหม่สูงกว่า Low เดิม
+            </span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>ใช้ Moving Average เป็นตัวกรอง</strong><br/>
+            <span style="font-size:0.875rem;color:var(--text-muted)">
+              ราคาอยู่เหนือ MA 200 = แนวโน้มขาขึ้น | ต่ำกว่า = ขาลง
+            </span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>หาจุดเข้าเมื่อราคา Pullback</strong><br/>
+            <span style="font-size:0.875rem;color:var(--text-muted)">
+              รอราคาย่อลงมาหาแนวรับ/MA แล้วค่อยเข้า ได้จุดเข้าดีกว่าไล่ราคา
+            </span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Breakout -->
+    <section id="breakout">
+      <h2>🚀 Breakout Trading</h2>
+      <p>
+        การเทรด Breakout คือการเข้าซื้อเมื่อราคาทะลุผ่านแนวต้านสำคัญ
+        หรือขายเมื่อทะลุแนวรับ เพราะมักเกิดแรงซื้อ/ขายตามมาอย่างรวดเร็ว
+      </p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0">
+        <div class="info-box" style="border-left-color:var(--green)">
+          🟢 <strong>Bullish Breakout</strong><br/>
+          ราคาทะลุแนวต้าน + Volume สูง<br/>
+          → สัญญาณซื้อ รอ Retest ก่อนยืนยัน
+        </div>
+        <div class="info-box" style="border-left-color:var(--red)">
+          🔴 <strong>Bearish Breakdown</strong><br/>
+          ราคาทะลุแนวรับ + Volume สูง<br/>
+          → สัญญาณขาย / Short Sell
+        </div>
+      </div>
+
+      <div class="info-box" style="border-left-color:#D4A017">
+        ⚠️ <strong>Fake Breakout:</strong> ระวังการ Breakout ที่ Volume ต่ำ
+        อาจเป็นการหลอกให้ซื้อก่อนราคาร่วง — รอให้แท่งเทียนปิดเหนือแนวต้านก่อนเสมอ
+      </div>
+    </section>
+
+    <!-- RSI -->
+    <section id="rsi">
+      <h2>🎯 RSI & Technical Indicators</h2>
+      <p>Indicators ช่วยยืนยันสัญญาณ ใช้ร่วมกับการวิเคราะห์กราฟเพื่อผลที่แม่นยำขึ้น</p>
+
+      <div class="indicator-card">
+        <h4>RSI (Relative Strength Index)</h4>
+        <p>วัดความแรงของการเคลื่อนไหวราคา ค่า 0–100<br/>
+        <strong>RSI &gt; 70</strong> = Overbought (ซื้อมากเกิน อาจพักตัว) |
+        <strong>RSI &lt; 30</strong> = Oversold (ขายมากเกิน อาจเด้ง)</p>
+      </div>
+
+      <div class="indicator-card">
+        <h4>MACD (Moving Average Convergence Divergence)</h4>
+        <p>วัดความสัมพันธ์ระหว่าง EMA สองเส้น ใช้หาจุดกลับตัวและยืนยันแนวโน้ม
+        <br/><strong>MACD ตัด Signal ขึ้น</strong> = สัญญาณซื้อ | <strong>ตัดลง</strong> = สัญญาณขาย</p>
+      </div>
+
+      <div class="indicator-card">
+        <h4>Bollinger Bands</h4>
+        <p>เส้นแบนด์รอบราคา แสดงความผันผวน ราคาชนขอบบน = Overbought
+        ราคาชนขอบล่าง = Oversold | แบนด์แคบ = กำลังจะ Breakout</p>
+      </div>
+
+      <div class="indicator-card">
+        <h4>Stochastic Oscillator</h4>
+        <p>เปรียบเทียบราคาปิดกับช่วงราคาในช่วงเวลา ค่า 0–100 คล้าย RSI
+        ใช้ดี%K ตัด %D เป็นสัญญาณซื้อขาย</p>
+      </div>
+    </section>
+
+    <!-- Risk Management -->
+    <section id="risk">
+      <h2>🛡️ การจัดการความเสี่ยง (Risk Management)</h2>
+      <p>
+        นักเทรดที่ประสบความสำเร็จทุกคนเห็นตรงกันว่า Risk Management สำคัญกว่า
+        การหา Entry ที่ดีเสียอีก เพราะไม่มีใครถูกตลอดเวลา
+      </p>
+
+      <table class="risk-table">
+        <thead>
+          <tr><th>กฎ</th><th>รายละเอียด</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1–2% Rule</strong></td>
+            <td>เสี่ยงต่อการเทรดแต่ละครั้งไม่เกิน 1-2% ของพอร์ตทั้งหมด</td>
+          </tr>
+          <tr>
+            <td><strong>Risk:Reward</strong></td>
+            <td>ควรมีอัตราส่วนอย่างน้อย 1:2 (เสี่ยง $1 → คาดกำไร $2)</td>
+          </tr>
+          <tr>
+            <td><strong>Diversification</strong></td>
+            <td>ไม่กระจุกหุ้นตัวเดียว กระจายหลายตัวหลายเซ็คเตอร์</td>
+          </tr>
+          <tr>
+            <td><strong>Max Drawdown</strong></td>
+            <td>กำหนดขีดสูงสุดที่รับได้ เช่น -20% จากพอร์ตต้องหยุดเทรด</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Position Sizing -->
+    <section id="position">
+      <h2>📐 Position Sizing</h2>
+      <p>การคำนวณจำนวนหุ้นที่ควรซื้อในแต่ละครั้ง เพื่อให้การขาดทุนไม่เกินที่กำหนด</p>
+
+      <div class="info-box">
+        📊 <strong>สูตร:</strong><br/>
+        <code style="background:var(--cream);padding:0.2rem 0.5rem;border-radius:4px;font-size:0.9rem">
+          จำนวนหุ้น = (พอร์ต × % ความเสี่ยง) ÷ (ราคาเข้า - Stop Loss)
+        </code><br/><br/>
+        <strong>ตัวอย่าง:</strong> พอร์ต $10,000, เสี่ยง 2%, ราคาเข้า $50, Stop $47<br/>
+        → ($10,000 × 0.02) ÷ ($50 - $47) = $200 ÷ $3 = ซื้อได้ 66 หุ้น
+      </div>
+    </section>
+
+    <!-- Stop Loss -->
+    <section id="stoploss">
+      <h2>✂️ Stop Loss</h2>
+      <p>
+        Stop Loss คือการกำหนดราคาที่จะตัดขาดทุนอัตโนมัติ
+        เป็นเครื่องมือที่สำคัญที่สุดในการปกป้องทุน
+      </p>
+
+      <h3>วิธีกำหนด Stop Loss</h3>
+      <ul class="step-list">
+        <li>
+          <div>
+            <strong>ต่ำกว่าแนวรับสำคัญ</strong><br/>
+            <span style="font-size:0.875rem;color:var(--text-muted)">วาง Stop ต่ำกว่า Support ประมาณ 1-3% เพื่อหลีกเลี่ยง Fake Breakout</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>ใต้เส้น Moving Average สำคัญ</strong><br/>
+            <span style="font-size:0.875rem;color:var(--text-muted)">เช่น ต่ำกว่า MA 50 หรือ MA 200 แล้วแต่ระยะเวลาการเทรด</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>ใช้ ATR (Average True Range)</strong><br/>
+            <span style="font-size:0.875rem;color:var(--text-muted)">กำหนด Stop ห่างจากราคาเข้า 1-2 เท่าของ ATR ให้เหมาะกับความผันผวน</span>
+          </div>
+        </li>
+      </ul>
+
+      <div class="info-box" style="border-left-color:var(--red)">
+        ❌ <strong>สิ่งที่ต้องไม่ทำ:</strong> ย้าย Stop Loss ให้ลึกขึ้นเมื่อขาดทุน
+        เพราะแสดงว่าคุณกำลังเดาว่าตลาดจะกลับมา แทนที่จะยึดแผน
+        ถ้า Stop โดน ยอมรับความจริง แล้วหาโอกาสใหม่
+      </div>
+    </section>
+
+    <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;gap:1rem;flex-wrap:wrap">
+      <a href="learn-chart.html" class="btn btn-outline">← การอ่านกราฟ</a>
+      <a href="stocks.html" class="btn btn-primary">ดูราคาหุ้น →</a>
+    </div>
+
+  </article>
+</div>
+
+<footer>
+  <span class="footer-logo">StockWise</span>
+  <p>แหล่งเรียนรู้การเทรดหุ้นสำหรับทุกคน · เนื้อหาเพื่อการศึกษาเท่านั้น</p>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

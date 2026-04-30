@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>การอ่านกราฟ — StockWise</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .learn-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+      align-items: start;
+    }
+
+    .sidebar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      position: sticky;
+      top: 84px;
+    }
+
+    .sidebar-title { font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-light); font-weight:600; margin-bottom:1rem; }
+    .sidebar-section { margin-bottom: 1.5rem; }
+    .sidebar-section-label { font-size:0.8rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem; }
+    .sidebar-link { display:flex; align-items:center; gap:0.6rem; text-decoration:none; color:var(--text-muted); font-size:0.875rem; padding:0.45rem 0.6rem; border-radius:var(--radius-sm); transition:all 0.15s; }
+    .sidebar-link:hover, .sidebar-link.active { color:var(--accent-dark); background:var(--egg); }
+
+    /* ─── ARTICLE ─── */
+    .article { max-width: 800px; }
+
+    .article h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--accent-dark);
+      margin: 2.5rem 0 0.75rem;
+      scroll-margin-top: 84px;
+    }
+
+    .article h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    .article p {
+      color: var(--text-muted);
+      line-height: 1.85;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .info-box {
+      background: var(--egg);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-light);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ─── CANDLESTICK VISUAL ─── */
+    .candle-demo {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .candle-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .candle-svg { width: 48px; }
+
+    .candle-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* ─── PATTERN CARDS ─── */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    .pattern-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .pattern-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    .pattern-card h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .pattern-card p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* ─── MA VISUAL ─── */
+    .ma-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin: 1rem 0;
+    }
+
+    .ma-table th {
+      background: var(--egg);
+      color: var(--accent-dark);
+      font-weight: 700;
+      padding: 0.6rem 1rem;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .ma-table td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .ma-table tr:last-child td { border-bottom: none; }
+
+    @media (max-width: 900px) {
+      .learn-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Stock<span>Wise</span></a>
+    <div class="nav-toggle"><span></span><span></span><span></span></div>
+    <ul class="nav-links">
+      <li><a href="index.html">หน้าแรก</a></li>
+      <li><a href="learn.html" class="active">ความรู้การเทรด</a></li>
+      <li><a href="stocks.html">รายการหุ้น</a></li>
+      <li><a href="chat.html" class="nav-cta">💬 แชทกับ AI</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>📊 การอ่านกราฟ</h1>
+  <p>ทำความเข้าใจกราฟหุ้น ตั้งแต่แท่งเทียนจนถึง Chart Patterns</p>
+</div>
+
+<div class="learn-grid">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">เนื้อหาในหน้านี้</div>
+    <div class="sidebar-section">
+      <a href="learn-chart.html#candlestick" class="sidebar-link">🕯️ แท่งเทียนญี่ปุ่น</a>
+      <a href="learn-chart.html#ma" class="sidebar-link">📈 Moving Average</a>
+      <a href="learn-chart.html#support" class="sidebar-link">🧱 Support & Resistance</a>
+      <a href="learn-chart.html#patterns" class="sidebar-link">🔷 Chart Patterns</a>
+      <a href="learn-chart.html#volume" class="sidebar-link">📦 Volume</a>
+      <a href="learn-chart.html#timeframe" class="sidebar-link">⏱️ Timeframe</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">หน้าอื่น ๆ</div>
+      <a href="learn.html" class="sidebar-link">← กลับหน้ารวม</a>
+      <a href="learn-technique.html" class="sidebar-link">⚡ เทคนิคการเทรด</a>
+    </div>
+  </aside>
+
+  <!-- ARTICLE -->
+  <article class="article">
+
+    <!-- Candlestick -->
+    <section id="candlestick">
+      <h2>🕯️ แท่งเทียนญี่ปุ่น (Japanese Candlestick)</h2>
+      <p>
+        แท่งเทียนญี่ปุ่นเป็นวิธีแสดงราคาหุ้นที่ได้รับความนิยมมากที่สุดในโลก
+        แต่ละแท่งบอกข้อมูลสำคัญ 4 อย่าง: ราคาเปิด (Open) ราคาปิด (Close)
+        ราคาสูงสุด (High) และราคาต่ำสุด (Low) ในช่วงเวลานั้น
+      </p>
+
+      <div class="candle-demo">
+        <div class="candle-item">
+          <svg class="candle-svg" viewBox="0 0 48 120" xmlns="http://www.w3.org/2000/svg">
+            <line x1="24" y1="5" x2="24" y2="25" stroke="#5A8A6A" stroke-width="2"/>
+            <rect x="12" y="25" width="24" height="70" fill="#5A8A6A" rx="2"/>
+            <line x1="24" y1="95" x2="24" y2="115" stroke="#5A8A6A" stroke-width="2"/>
+          </svg>
+          <span class="candle-label" style="color:var(--green)">Bullish<br/>(ราคาขึ้น)</span>
+        </div>
+        <div class="candle-item">
+          <svg class="candle-svg" viewBox="0 0 48 120" xmlns="http://www.w3.org/2000/svg">
+            <line x1="24" y1="5" x2="24" y2="25" stroke="#C0544A" stroke-width="2"/>
+            <rect x="12" y="25" width="24" height="70" fill="#C0544A" rx="2"/>
+            <line x1="24" y1="95" x2="24" y2="115" stroke="#C0544A" stroke-width="2"/>
+          </svg>
+          <span class="candle-label" style="color:var(--red)">Bearish<br/>(ราคาลง)</span>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <div class="info-box">
+            <strong>วิธีอ่าน:</strong><br/>
+            🟩 แท่งเขียว = ราคาปิด <strong>สูงกว่า</strong> ราคาเปิด (ราคาขึ้น)<br/>
+            🟥 แท่งแดง = ราคาปิด <strong>ต่ำกว่า</strong> ราคาเปิด (ราคาลง)<br/>
+            ส่วน <strong>ไส้</strong> บนล่าง = ราคาสูงสุด/ต่ำสุดในช่วงนั้น
+          </div>
+        </div>
+      </div>
+
+      <h3>รูปแบบแท่งเทียนที่ควรรู้</h3>
+      <div class="pattern-grid">
+        <div class="pattern-card">
+          <div class="pattern-icon">🔨</div>
+          <h4>Hammer</h4>
+          <p>ไส้ล่างยาว ตัวเล็ก — สัญญาณกลับตัวขาขึ้น</p>
+        </div>
+        <div class="pattern-card">
+          <div class="pattern-icon">⭐</div>
+          <h4>Doji</h4>
+          <p>ราคาเปิด=ปิด — ตลาดลังเล อาจกลับทิศ</p>
+        </div>
+        <div class="pattern-card">
+          <div class="pattern-icon">🌟</div>
+          <h4>Engulfing</h4>
+          <p>แท่งใหม่กลืนแท่งเก่า — สัญญาณกลับตัวแรง</p>
+        </div>
+        <div class="pattern-card">
+          <div class="pattern-icon">🌠</div>
+          <h4>Morning Star</h4>
+          <p>3 แท่ง ดาวรุ่ง — กลับตัวขาขึ้นหลังขาลง</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MA -->
+    <section id="ma">
+      <h2>📈 Moving Average (MA)</h2>
+      <p>
+        Moving Average คือเส้นเฉลี่ยราคาย้อนหลัง ใช้ดูแนวโน้มราคาหุ้น
+        ลดสัญญาณรบกวน (noise) และหาจุดซื้อขาย
+      </p>
+
+      <table class="ma-table">
+        <thead>
+          <tr>
+            <th>ประเภท</th>
+            <th>ระยะ</th>
+            <th>ใช้ทำอะไร</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>SMA 20</strong></td>
+            <td>20 วัน</td>
+            <td>ดูแนวโน้มระยะสั้น-กลาง</td>
+          </tr>
+          <tr>
+            <td><strong>SMA 50</strong></td>
+            <td>50 วัน</td>
+            <td>แนวรับ/แนวต้านระยะกลาง</td>
+          </tr>
+          <tr>
+            <td><strong>SMA 200</strong></td>
+            <td>200 วัน</td>
+            <td>แนวโน้มระยะยาว นักลงทุนสถาบันดูมาก</td>
+          </tr>
+          <tr>
+            <td><strong>EMA</strong></td>
+            <td>ปรับได้</td>
+            <td>ให้น้ำหนักราคาล่าสุดมากกว่า ไวกว่า SMA</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        💡 <strong>Golden Cross vs Death Cross:</strong><br/>
+        <strong>Golden Cross</strong> — MA 50 ตัดขึ้นเหนือ MA 200 → สัญญาณซื้อ (ขาขึ้น)<br/>
+        <strong>Death Cross</strong> — MA 50 ตัดลงต่ำกว่า MA 200 → สัญญาณขาย (ขาลง)
+      </div>
+    </section>
+
+    <!-- Support & Resistance -->
+    <section id="support">
+      <h2>🧱 Support & Resistance</h2>
+      <p>
+        แนวรับ (Support) คือระดับราคาที่หุ้นมักจะ "หยุดลง" และเด้งกลับขึ้น
+        แนวต้าน (Resistance) คือระดับที่ราคามักจะ "ชนเพดาน" และย้อนกลับลง
+      </p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0">
+        <div class="info-box" style="border-left-color:var(--green)">
+          🟢 <strong>แนวรับ (Support)</strong><br/>
+          ระดับราคาที่ผู้ซื้อพร้อมเข้าซื้อ ทำให้ราคาไม่ตกต่ำกว่านี้
+          ยิ่งเทสซ้ำหลายครั้ง แนวรับยิ่งแข็งแกร่ง
+        </div>
+        <div class="info-box" style="border-left-color:var(--red)">
+          🔴 <strong>แนวต้าน (Resistance)</strong><br/>
+          ระดับราคาที่ผู้ขายพร้อมขาย ทำให้ราคาขึ้นต่อยาก
+          เมื่อ Breakout ผ่านไปได้ มักเปลี่ยนเป็นแนวรับ
+        </div>
+      </div>
+
+      <h3>กฎสำคัญ: Role Reversal</h3>
+      <p>
+        เมื่อราคา Breakout ผ่านแนวต้านได้สำเร็จ แนวต้านนั้นจะกลายเป็นแนวรับใหม่
+        และในทางกลับกัน เมื่อแนวรับแตก มักกลายเป็นแนวต้านต่อไป
+      </p>
+    </section>
+
+    <!-- Chart Patterns -->
+    <section id="patterns">
+      <h2>🔷 Chart Patterns</h2>
+      <p>รูปแบบกราฟที่เกิดซ้ำ ๆ บอกทิศทางราคาในอนาคตได้</p>
+
+      <div class="pattern-grid">
+        <div class="pattern-card">
+          <div class="pattern-icon">🏔️</div>
+          <h4>Head & Shoulders</h4>
+          <p>สัญญาณกลับตัวขาลง หลังจากขาขึ้น</p>
+        </div>
+        <div class="pattern-card">
+          <div class="pattern-icon">🔺</div>
+          <h4>Triangle</h4>
+          <p>Ascending/Descending/Symmetrical — รอ Breakout</p>
+        </div>
+        <div class="pattern-card">
+          <div class="pattern-icon">🏁</div>
+          <h4>Flag & Pennant</h4>
+          <p>พักตัวในแนวโน้ม ก่อน Breakout ต่อ</p>
+        </div>
+        <div class="pattern-card">
+          <div class="pattern-icon">🥣</div>
+          <h4>Cup & Handle</h4>
+          <p>รูปถ้วย — สัญญาณขาขึ้นรูปแบบ Classic</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Volume -->
+    <section id="volume">
+      <h2>📦 Volume Analysis</h2>
+      <p>
+        Volume คือจำนวนหุ้นที่ซื้อขายในช่วงเวลาหนึ่ง บอก "น้ำหนัก" ของการเคลื่อนไหวราคา
+      </p>
+      <div class="info-box">
+        📌 <strong>หลักการ:</strong><br/>
+        • ราคาขึ้น + Volume สูง = แนวโน้มขาขึ้นแข็งแกร่ง<br/>
+        • ราคาขึ้น + Volume ต่ำ = แนวโน้มอ่อนแอ อาจกลับตัว<br/>
+        • Breakout + Volume สูง = Breakout น่าเชื่อถือ<br/>
+        • Breakout + Volume ต่ำ = อาจเป็น Fake Breakout
+      </div>
+    </section>
+
+    <!-- Timeframe -->
+    <section id="timeframe">
+      <h2>⏱️ การเลือก Timeframe</h2>
+      <p>Timeframe คือช่วงเวลาของแต่ละแท่งเทียน เลือกให้เหมาะกับสไตล์การเทรด</p>
+
+      <table class="ma-table">
+        <thead>
+          <tr><th>Timeframe</th><th>เหมาะกับ</th><th>ข้อดี</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>1D (Daily)</strong></td><td>Swing Trader, นักลงทุน</td><td>สัญญาณน่าเชื่อถือ, สบายกว่า</td></tr>
+          <tr><td><strong>4H / 1H</strong></td><td>Swing Trader</td><td>โอกาสมากขึ้น</td></tr>
+          <tr><td><strong>15m / 5m</strong></td><td>Day Trader</td><td>เข้าออกเร็ว แต่ noise เยอะ</td></tr>
+          <tr><td><strong>Weekly</strong></td><td>Position Trader</td><td>ภาพรวมใหญ่ สัญญาณแม่น</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;gap:1rem;flex-wrap:wrap">
+      <a href="learn.html" class="btn btn-outline">← กลับหน้ารวม</a>
+      <a href="learn-technique.html" class="btn btn-primary">ต่อไป: เทคนิคการเทรด →</a>
+    </div>
+
+  </article>
+</div>
+
+<footer>
+  <span class="footer-logo">StockWise</span>
+  <p>แหล่งเรียนรู้การเทรดหุ้นสำหรับทุกคน · เนื้อหาเพื่อการศึกษาเท่านั้น</p>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

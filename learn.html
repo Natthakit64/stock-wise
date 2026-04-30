@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ความรู้การเทรด — StockWise</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .learn-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+      align-items: start;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      position: sticky;
+      top: 84px;
+    }
+
+    .sidebar-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-light);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-section { margin-bottom: 1.5rem; }
+
+    .sidebar-section-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      padding: 0.45rem 0.6rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s;
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+      color: var(--accent-dark);
+      background: var(--egg);
+    }
+
+    /* ─── MAIN CONTENT ─── */
+    .learn-main {}
+
+    .module-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: all 0.25s;
+    }
+
+    .module-card:hover { box-shadow: var(--shadow-lg); }
+
+    .module-header {
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, var(--egg), var(--cream));
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .module-icon {
+      width: 52px; height: 52px;
+      background: #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      flex-shrink: 0;
+    }
+
+    .module-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--accent-dark);
+      margin-bottom: 0.2rem;
+    }
+
+    .module-header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .module-body { padding: 1.75rem 2rem; }
+
+    .topic-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .topic-list li a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      transition: all 0.15s;
+    }
+
+    .topic-list li a:hover {
+      border-color: var(--accent-light);
+      background: var(--egg);
+      color: var(--accent-dark);
+    }
+
+    /* ─── INLINE ARTICLE SECTIONS ─── */
+    .article-section {
+      margin-top: 3rem;
+      scroll-margin-top: 84px;
+    }
+
+    .article-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--accent-dark);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-section p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .info-box {
+      background: var(--egg);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-light);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 900px) {
+      .learn-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .topic-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Stock<span>Wise</span></a>
+    <div class="nav-toggle"><span></span><span></span><span></span></div>
+    <ul class="nav-links">
+      <li><a href="index.html">หน้าแรก</a></li>
+      <li><a href="learn.html" class="active">ความรู้การเทรด</a></li>
+      <li><a href="stocks.html">รายการหุ้น</a></li>
+      <li><a href="chat.html" class="nav-cta">💬 แชทกับ AI</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>📚 ความรู้การเทรดหุ้น</h1>
+  <p>รวมบทเรียนสำหรับนักลงทุนทุกระดับ ตั้งแต่พื้นฐานจนถึงขั้นสูง</p>
+</div>
+
+<div class="learn-grid">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">เนื้อหาทั้งหมด</div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">📖 ภาพรวม</div>
+      <a href="learn.html" class="sidebar-link active">หน้ารวมความรู้</a>
+      <a href="learn.html#fundamental" class="sidebar-link">Fundamental Analysis</a>
+      <a href="learn.html#psychology" class="sidebar-link">จิตวิทยาการเทรด</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">📊 การอ่านกราฟ</div>
+      <a href="learn-chart.html" class="sidebar-link">ภาพรวมการอ่านกราฟ</a>
+      <a href="learn-chart.html#candlestick" class="sidebar-link">แท่งเทียนญี่ปุ่น</a>
+      <a href="learn-chart.html#ma" class="sidebar-link">Moving Average</a>
+      <a href="learn-chart.html#support" class="sidebar-link">Support & Resistance</a>
+      <a href="learn-chart.html#patterns" class="sidebar-link">Chart Patterns</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">⚡ เทคนิคการเทรด</div>
+      <a href="learn-technique.html" class="sidebar-link">ภาพรวมเทคนิค</a>
+      <a href="learn-technique.html#trend" class="sidebar-link">Trend Following</a>
+      <a href="learn-technique.html#rsi" class="sidebar-link">RSI & Indicators</a>
+      <a href="learn-technique.html#risk" class="sidebar-link">การจัดการความเสี่ยง</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="learn-main">
+
+    <!-- Module: Chart Reading -->
+    <div class="module-card fade-up">
+      <div class="module-header">
+        <div class="module-icon">📊</div>
+        <div>
+          <h2>การอ่านกราฟ</h2>
+          <p>ทำความเข้าใจกราฟหุ้น รูปแบบต่าง ๆ และสัญญาณที่สำคัญ</p>
+        </div>
+      </div>
+      <div class="module-body">
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.25rem">
+          การอ่านกราฟเป็นทักษะพื้นฐานที่ทุกนักเทรดต้องมี ไม่ว่าจะใช้กลยุทธ์ไหน
+          ความเข้าใจกราฟจะช่วยให้คุณตัดสินใจได้ดีขึ้น
+        </p>
+        <ul class="topic-list">
+          <li><a href="learn-chart.html#candlestick">🕯️ แท่งเทียนญี่ปุ่น</a></li>
+          <li><a href="learn-chart.html#ma">📈 Moving Average (MA)</a></li>
+          <li><a href="learn-chart.html#support">🧱 Support & Resistance</a></li>
+          <li><a href="learn-chart.html#patterns">🔷 Chart Patterns</a></li>
+          <li><a href="learn-chart.html#volume">📦 Volume Analysis</a></li>
+          <li><a href="learn-chart.html#timeframe">⏱️ Timeframe ต่าง ๆ</a></li>
+        </ul>
+        <div style="margin-top:1.25rem">
+          <a href="learn-chart.html" class="btn btn-outline">ไปหน้าการอ่านกราฟ →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module: Techniques -->
+    <div class="module-card fade-up fade-up-delay-1">
+      <div class="module-header">
+        <div class="module-icon">⚡</div>
+        <div>
+          <h2>เทคนิคการเทรด</h2>
+          <p>กลยุทธ์และวิธีการที่นักเทรดมืออาชีพใช้จริง</p>
+        </div>
+      </div>
+      <div class="module-body">
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.25rem">
+          มีหลายวิธีในการเทรดหุ้น แต่ละวิธีเหมาะกับสไตล์และเวลาที่แตกต่างกัน
+          เรียนรู้แต่ละเทคนิคและเลือกที่เหมาะกับคุณ
+        </p>
+        <ul class="topic-list">
+          <li><a href="learn-technique.html#trend">⚡ Trend Following</a></li>
+          <li><a href="learn-technique.html#rsi">🎯 RSI & Oscillators</a></li>
+          <li><a href="learn-technique.html#breakout">🚀 Breakout Trading</a></li>
+          <li><a href="learn-technique.html#risk">🛡️ Risk Management</a></li>
+          <li><a href="learn-technique.html#position">📐 Position Sizing</a></li>
+          <li><a href="learn-technique.html#stoploss">✂️ Stop Loss</a></li>
+        </ul>
+        <div style="margin-top:1.25rem">
+          <a href="learn-technique.html" class="btn btn-outline">ไปหน้าเทคนิค →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline: Fundamental -->
+    <div class="article-section" id="fundamental">
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-icon">🔍</div>
+          <div>
+            <h2>Fundamental Analysis</h2>
+            <p>การวิเคราะห์ปัจจัยพื้นฐานของบริษัท</p>
+          </div>
+        </div>
+        <div class="module-body">
+          <h3 style="font-family:'Playfair Display',serif;color:var(--accent-dark);margin-bottom:0.75rem">คืออะไร?</h3>
+          <p style="color:var(--text-muted);font-size:0.95rem;line-height:1.8;margin-bottom:1rem">
+            Fundamental Analysis คือการวิเคราะห์มูลค่าที่แท้จริงของหุ้น โดยดูจากปัจจัยพื้นฐาน
+            ของบริษัท เช่น รายได้ กำไร หนี้สิน การเติบโต และสภาพแวดล้อมของอุตสาหกรรม
+          </p>
+
+          <div class="info-box">
+            💡 <strong>ตัวชี้วัดสำคัญ:</strong><br/>
+            <strong>P/E Ratio</strong> — ราคาหุ้นเทียบกับกำไรต่อหุ้น | ยิ่งต่ำ อาจถูกกว่าพื้นฐาน<br/>
+            <strong>EPS</strong> — กำไรต่อหุ้น บอกถึงความสามารถทำกำไรของบริษัท<br/>
+            <strong>ROE</strong> — ผลตอบแทนต่อผู้ถือหุ้น วัดประสิทธิภาพการบริหาร<br/>
+            <strong>Debt/Equity</strong> — อัตราส่วนหนี้สินต่อทุน วัดความเสี่ยงทางการเงิน
+          </div>
+
+          <p style="color:var(--text-muted);font-size:0.95rem;line-height:1.8">
+            นักลงทุนสาย Fundamental จะถือหุ้นระยะยาว เน้นหาหุ้นที่ราคาต่ำกว่ามูลค่าจริง (Undervalued)
+            แล้วรอให้ตลาดรับรู้มูลค่าที่แท้จริง — เป็นแนวทางของ Warren Buffett
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline: Psychology -->
+    <div class="article-section" id="psychology">
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-icon">🧠</div>
+          <div>
+            <h2>จิตวิทยาการเทรด</h2>
+            <p>ทำไมจิตใจถึงสำคัญกว่าระบบการเทรด</p>
+          </div>
+        </div>
+        <div class="module-body">
+          <p style="color:var(--text-muted);font-size:0.95rem;line-height:1.8;margin-bottom:1rem">
+            การเทรดที่สำเร็จไม่ได้ขึ้นอยู่กับการมีระบบที่ดีเท่านั้น แต่ต้องสามารถ
+            ควบคุมอารมณ์และยึดถือแผนได้อย่างสม่ำเสมอ
+          </p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0">
+            <div class="info-box" style="border-left-color:var(--red)">
+              😰 <strong>ข้อผิดพลาดทางจิตใจ</strong><br/>
+              • FOMO — กลัวพลาดโอกาส<br/>
+              • Revenge Trading — เทรดแก้แค้น<br/>
+              • Overtrading — เทรดมากเกินไป<br/>
+              • Loss Aversion — กลัวขาดทุน
+            </div>
+            <div class="info-box" style="border-left-color:var(--green)">
+              💪 <strong>วิธีพัฒนาจิตใจ</strong><br/>
+              • มีแผนการเทรดชัดเจน<br/>
+              • ยึด Stop Loss เสมอ<br/>
+              • บันทึก Trading Journal<br/>
+              • พักเมื่อรู้สึกเครียด
+            </div>
+          </div>
+
+          <p style="color:var(--text-muted);font-size:0.95rem;line-height:1.8">
+            นักเทรดที่ประสบความสำเร็จส่วนใหญ่บอกว่า <strong>80% ของความสำเร็จมาจากจิตใจ</strong>
+            และเพียง 20% มาจากระบบการเทรด
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <span class="footer-logo">StockWise</span>
+  <p>แหล่งเรียนรู้การเทรดหุ้นสำหรับทุกคน · เนื้อหาเพื่อการศึกษาเท่านั้น</p>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

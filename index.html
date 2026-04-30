@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StockWise — เรียนรู้การเทรดหุ้น</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ─── HERO ─── */
+    .hero {
+      min-height: calc(100vh - 64px);
+      display: flex;
+      align-items: center;
+      background: linear-gradient(145deg, var(--bg) 0%, var(--egg) 60%, var(--cream) 100%);
+      position: relative;
+      overflow: hidden;
+      padding: 4rem 2rem;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(176,154,120,0.18) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -80px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(139,115,85,0.10) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      background: var(--egg);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      line-height: 1.2;
+      color: var(--accent-dark);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent-light);
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* ─── HERO VISUAL (right side) ─── */
+    .hero-visual {
+      position: relative;
+    }
+
+    .hero-card-main {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hero-card-main .card-label {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-ticker {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-ticker .symbol {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent-dark);
+    }
+
+    .hero-ticker .price {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .hero-chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 80px;
+      margin: 1.25rem 0;
+    }
+
+    .hero-chart-bars .bar {
+      flex: 1;
+      background: linear-gradient(to top, var(--accent), var(--accent-light));
+      border-radius: 4px 4px 0 0;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .hero-chart-bars .bar:hover { opacity: 1; }
+    .hero-chart-bars .bar.up { background: linear-gradient(to top, var(--green), #7BBF8E); }
+    .hero-chart-bars .bar.down { background: linear-gradient(to top, var(--red), #D98080); }
+
+    .hero-mini-cards {
+      position: absolute;
+      bottom: -1.5rem;
+      left: -1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .hero-mini-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      box-shadow: var(--shadow);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 160px;
+    }
+
+    .mini-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ─── FEATURES ─── */
+    .features {
+      padding: 5rem 2rem;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .features-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      transition: all 0.25s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .feature-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+      border-color: var(--accent-light);
+    }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      background: var(--egg);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--accent-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .feature-arrow {
+      display: inline-block;
+      margin-top: 1rem;
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* ─── TOPICS PREVIEW ─── */
+    .topics {
+      padding: 4rem 2rem;
+      background: var(--egg);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topics-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .topic-chip {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .topic-chip:hover {
+      border-color: var(--accent-light);
+      background: var(--egg);
+      color: var(--accent-dark);
+    }
+
+    .topic-chip .chip-icon { font-size: 1.25rem; }
+
+    /* ─── DISCLAIMER ─── */
+    .disclaimer {
+      max-width: 1200px;
+      margin: 3rem auto 0;
+      padding: 0 2rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-light);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .hero-visual { display: none; }
+      .hero { min-height: auto; padding: 3rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Stock<span>Wise</span></a>
+    <div class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">หน้าแรก</a></li>
+      <li><a href="learn.html">ความรู้การเทรด</a></li>
+      <li><a href="stocks.html">รายการหุ้น</a></li>
+      <li><a href="chat.html" class="nav-cta">💬 แชทกับ AI</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <span class="hero-eyebrow">📈 เรียนรู้การเทรดหุ้น</span>
+      <h1>เข้าใจหุ้น<br /><em>ง่ายกว่าที่คิด</em></h1>
+      <p class="hero-desc">
+        แหล่งรวมความรู้การเทรดหุ้นสำหรับมือใหม่และนักลงทุนทุกระดับ
+        เรียนรู้การอ่านกราฟ เทคนิคการเทรด และติดตามราคาหุ้นยอดนิยม
+      </p>
+      <div class="hero-actions">
+        <a href="learn.html" class="btn btn-primary">เริ่มเรียนรู้ →</a>
+        <a href="stocks.html" class="btn btn-outline">ดูราคาหุ้น</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card-main">
+        <div class="card-label">Market Overview</div>
+        <div class="hero-ticker">
+          <span class="symbol">AAPL</span>
+          <span class="price">$189.30</span>
+        </div>
+        <span class="badge badge-green">+1.24% ↑</span>
+        <div class="hero-chart-bars">
+          <div class="bar down" style="height:45%"></div>
+          <div class="bar up"   style="height:55%"></div>
+          <div class="bar up"   style="height:70%"></div>
+          <div class="bar down" style="height:60%"></div>
+          <div class="bar up"   style="height:75%"></div>
+          <div class="bar up"   style="height:85%"></div>
+          <div class="bar down" style="height:65%"></div>
+          <div class="bar up"   style="height:90%"></div>
+          <div class="bar up"   style="height:80%"></div>
+          <div class="bar up"   style="height:95%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-light)">
+          <span>Open: $186.52</span>
+          <span>Vol: 54.2M</span>
+          <span>52W: $164–$199</span>
+        </div>
+      </div>
+
+      <div class="hero-mini-cards">
+        <div class="hero-mini-card">
+          <div class="mini-dot" style="background:var(--green)"></div>
+          <div>
+            <div style="font-weight:600;font-size:0.82rem">MSFT</div>
+            <div class="price-up" style="font-size:0.78rem">+0.89%</div>
+          </div>
+        </div>
+        <div class="hero-mini-card">
+          <div class="mini-dot" style="background:var(--red)"></div>
+          <div>
+            <div style="font-weight:600;font-size:0.82rem">TSLA</div>
+            <div class="price-down" style="font-size:0.78rem">-2.14%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="features-header">
+    <p style="color:var(--accent);font-weight:600;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem">มีอะไรในเว็บนี้</p>
+    <h2 class="section-title" style="font-size:2rem">ทุกสิ่งที่นักลงทุนต้องรู้</h2>
+    <div class="divider" style="margin:0.75rem auto 0"></div>
+  </div>
+
+  <div class="features-grid">
+    <a href="learn.html" class="feature-card fade-up fade-up-delay-1">
+      <div class="feature-icon">📚</div>
+      <h3>ความรู้การเทรด</h3>
+      <p>เรียนรู้พื้นฐานการลงทุน เทคนิคการวิเคราะห์ และแนวคิดที่นักเทรดมือโปรใช้จริง</p>
+      <span class="feature-arrow">อ่านเพิ่มเติม →</span>
+    </a>
+    <a href="learn-chart.html" class="feature-card fade-up fade-up-delay-2">
+      <div class="feature-icon">📊</div>
+      <h3>การอ่านกราฟ</h3>
+      <p>ทำความเข้าใจแท่งเทียน เส้น Moving Average รูปแบบกราฟที่สำคัญ พร้อมตัวอย่างจริง</p>
+      <span class="feature-arrow">อ่านเพิ่มเติม →</span>
+    </a>
+    <a href="stocks.html" class="feature-card fade-up fade-up-delay-3">
+      <div class="feature-icon">💹</div>
+      <h3>รายการหุ้น</h3>
+      <p>ติดตามราคาปิดตลาดของหุ้น NYSE/NASDAQ ยอดนิยม พร้อมข้อมูลสำคัญครบในที่เดียว</p>
+      <span class="feature-arrow">ดูราคาหุ้น →</span>
+    </a>
+    <a href="chat.html" class="feature-card fade-up fade-up-delay-4">
+      <div class="feature-icon">🤖</div>
+      <h3>แชทกับ AI</h3>
+      <p>ถามคำถามเกี่ยวกับการเทรดได้ทุกอย่าง AI พร้อมตอบและอธิบายให้เข้าใจง่าย</p>
+      <span class="feature-arrow">เริ่มแชท →</span>
+    </a>
+  </div>
+</section>
+
+<!-- TOPICS PREVIEW -->
+<section class="topics">
+  <div class="topics-inner">
+    <p style="color:var(--accent);font-weight:600;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem">หัวข้อที่น่าสนใจ</p>
+    <h2 class="section-title">เรียนรู้ครบ จบในที่เดียว</h2>
+
+    <div class="topics-grid">
+      <a href="learn-chart.html" class="topic-chip">
+        <span class="chip-icon">🕯️</span> แท่งเทียนญี่ปุ่น
+      </a>
+      <a href="learn-chart.html#ma" class="topic-chip">
+        <span class="chip-icon">📈</span> Moving Average
+      </a>
+      <a href="learn-chart.html#support" class="topic-chip">
+        <span class="chip-icon">🧱</span> Support & Resistance
+      </a>
+      <a href="learn-technique.html" class="topic-chip">
+        <span class="chip-icon">⚡</span> Trend Following
+      </a>
+      <a href="learn-technique.html#rsi" class="topic-chip">
+        <span class="chip-icon">🎯</span> RSI & Oscillators
+      </a>
+      <a href="learn-technique.html#risk" class="topic-chip">
+        <span class="chip-icon">🛡️</span> การจัดการความเสี่ยง
+      </a>
+      <a href="learn.html#fundamental" class="topic-chip">
+        <span class="chip-icon">🔍</span> Fundamental Analysis
+      </a>
+      <a href="learn.html#psychology" class="topic-chip">
+        <span class="chip-icon">🧠</span> จิตวิทยาการเทรด
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer container" style="margin-top:3rem">
+  ⚠️ <strong>คำเตือน:</strong> เนื้อหาในเว็บไซต์นี้มีจุดประสงค์เพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำทางการเงินหรือการลงทุน
+  การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาข้อมูลและตัดสินใจด้วยตนเอง
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">StockWise</span>
+  <p>แหล่งเรียนรู้การเทรดหุ้นสำหรับทุกคน · เนื้อหาเพื่อการศึกษาเท่านั้น</p>
+  <p style="margin-top:0.5rem;font-size:0.8rem;opacity:0.7">© 2025 StockWise. ไม่ใช่คำแนะนำทางการเงิน</p>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
