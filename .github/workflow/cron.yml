@@ -1,0 +1,67 @@
+name: Cron Jobs
+
+on:
+  schedule:
+    # ดึงราคาหุ้น: ทุกวันจันทร์-ศุกร์ เวลา 22:30 UTC (= 05:30 น. ไทย วันถัดไป)
+    # ตลาด NYSE/NASDAQ ปิด 16:00 ET = 21:00 UTC → รอ 90 นาทีให้ข้อมูลนิ่งก่อน
+    - cron: '30 21 * * 1-5'
+
+    # ลบประวัติแชทเก่า: ทุกคืนเที่ยงคืน UTC
+    - cron: '0 0 * * *'
+
+  # สามารถรัน manual ได้จาก GitHub UI
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Job to run'
+        required: true
+        default: 'stocks'
+        type: choice
+        options:
+          - stocks
+          - cleanup
+          - both
+
+jobs:
+  fetch-stocks:
+    name: Fetch Stock Prices
+    runs-on: ubuntu-latest
+    # รันเมื่อ: schedule ตรงกับ cron แรก หรือ manual เลือก stocks/both
+    if: >
+      (github.event_name == 'schedule' && contains(github.event.schedule, '30 21')) ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'stocks' || github.event.inputs.job == 'both'))
+
+    steps:
+      - name: Trigger cron-stocks endpoint
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.SITE_URL }}/api/cron-stocks")
+          echo "Response: $response"
+          if [ "$response" != "200" ]; then
+            echo "❌ cron-stocks failed with status $response"
+            exit 1
+          fi
+          echo "✅ cron-stocks completed"
+
+  cleanup-chat:
+    name: Cleanup Old Chat Messages
+    runs-on: ubuntu-latest
+    if: >
+      (github.event_name == 'schedule' && contains(github.event.schedule, '0 0')) ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'cleanup' || github.event.inputs.job == 'both'))
+
+    steps:
+      - name: Trigger cron-cleanup endpoint
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.SITE_URL }}/api/cron-cleanup")
+          echo "Response: $response"
+          if [ "$response" != "200" ]; then
+            echo "❌ cron-cleanup failed with status $response"
+            exit 1
+          fi
+          echo "✅ cron-cleanup completed"

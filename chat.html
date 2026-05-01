@@ -115,6 +115,9 @@
     .sidebar-bottom {
       padding: 1rem 1.5rem;
       border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
 
     .clear-btn {
@@ -131,6 +134,12 @@
     }
 
     .clear-btn:hover { border-color: var(--red); color: var(--red); }
+
+    .session-info {
+      font-size: 0.7rem;
+      color: var(--text-light);
+      text-align: center;
+    }
 
     /* ─── CHAT AREA ─── */
     .chat-main {
@@ -305,7 +314,6 @@
 </head>
 <body>
 
-<!-- NAV (จาก main.js / style.css เดิม) -->
 <nav><!-- navbar เดิม --></nav>
 
 <div class="chat-layout">
@@ -321,12 +329,10 @@
     <div class="model-select-wrap">
       <label>โมเดล AI</label>
       <select class="model-select" id="modelSelect">
-        <option value="poolside/fp8">fp8 (Free)</option>
-        <option value="meta-llama/llama-4-maverick:free">Llama 4 Maverick (Free)</option>
-        <option value="deepseek/deepseek-chat-v3-0324:free">DeepSeek V3 (Free)</option>
-        <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Free)</option>
-        <option value="qwen/qwen3-8b:free">Qwen3 8B (Free)</option>
-        <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+        <option value="nvidia/nemotron-3-super-120b-a12b:free">nemotron-3-super-120b-a12b:free</option>
+        <option value="poolside/laguna-xs.2:free">laguna-xs.2:free</option>
+        <option value="google/gemma-4-31b-it:free">gemma-4-26b-a4b-it:free</option>
+        <option value="google/gemma-4-26b-a4b-it:free">gemma-4-31b-it:free</option>
       </select>
     </div>
 
@@ -345,6 +351,7 @@
 
     <div class="sidebar-bottom">
       <button class="clear-btn" onclick="clearChat()">🗑️ ล้างบทสนทนา</button>
+      <div class="session-info" id="sessionInfo">กำลังโหลด...</div>
     </div>
   </div>
 
@@ -397,8 +404,59 @@ Risk Management, Trading Psychology, indicators ต่าง ๆ และแน
 - ให้เตือนเสมอว่าการลงทุนมีความเสี่ยง 
 ตอบกระชับ ชัดเจน ใช้ emoji ได้บ้างเพื่อความน่าอ่าน`;
 
-let messages  = [];
+// ─── SESSION MANAGEMENT ───
+// สร้าง UUID แบบง่าย (ไม่ต้องพึ่ง crypto library)
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
+function getOrCreateSession() {
+  let sid = localStorage.getItem('stockwise_session_id');
+  if (!sid) {
+    sid = generateUUID();
+    localStorage.setItem('stockwise_session_id', sid);
+  }
+  return sid;
+}
+
+const SESSION_ID = getOrCreateSession();
+
+// แสดง session info ย่อๆ ใน sidebar
+document.getElementById('sessionInfo').textContent =
+  `Session: ${SESSION_ID.slice(0, 8)}... · ประวัติ 3 วัน`;
+
+// ─── STATE ───
+let messages  = []; // เก็บ context สำหรับส่งไป API (เฉพาะ session ปัจจุบัน)
 let isLoading = false;
+
+// ─── โหลดประวัติแชทจาก DB ───
+async function loadHistory() {
+  try {
+    const res = await fetch(`/api/chat?session_id=${SESSION_ID}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const history = data.history || [];
+    if (!history.length) return;
+
+    // ลบ welcome screen
+    document.getElementById('welcomeScreen')?.remove();
+
+    // render ประวัติ
+    history.forEach(m => addMessage(m.role === 'assistant' ? 'ai' : 'user', m.content, false));
+
+    // เก็บเป็น context (เพื่อให้ AI มี memory ใน session นี้)
+    messages = history.map(m => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+  } catch (e) {
+    console.warn('[loadHistory]', e);
+  }
+}
 
 // ─── SEND ───
 async function sendMessage() {
@@ -421,24 +479,20 @@ async function sendMessage() {
   const model = document.getElementById('modelSelect').value;
 
   try {
-    // เรียก /api/chat (Vercel serverless) แทน OpenRouter โดยตรง
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          ...messages
-        ]
-      })
+        session_id: SESSION_ID,
+        system_prompt: SYSTEM_PROMPT,
+        messages,
+      }),
     });
 
     const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.error || `HTTP ${res.status}`);
-    }
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
     const reply = data.choices?.[0]?.message?.content || '(ไม่ได้รับคำตอบ)';
     removeTyping(typingId);
@@ -455,10 +509,11 @@ async function sendMessage() {
 }
 
 // ─── UI HELPERS ───
-function addMessage(role, text) {
+function addMessage(role, text, animate = true) {
   const wrap = document.getElementById('chatMessages');
   const div  = document.createElement('div');
-  div.className = `message ${role}`;
+  div.className = `message ${role}${animate ? '' : ''}`;
+  if (!animate) div.style.animation = 'none';
   div.innerHTML = `
     <div class="msg-avatar">${role === 'user' ? '👤' : '🤖'}</div>
     <div class="msg-bubble">${escapeAndFormat(text)}</div>
@@ -513,6 +568,8 @@ function clearChat() {
       <p>ถามคำถามเกี่ยวกับการเทรดหุ้น การอ่านกราฟ เทคนิคต่าง ๆ หรือแนวคิดการลงทุนได้เลยครับ</p>
       <p style="margin-top:0.5rem;font-size:0.8rem;color:var(--text-light)">⚠️ AI ไม่แนะนำหุ้นเฉพาะเจาะจง เนื้อหาเพื่อการศึกษาเท่านั้น</p>
     </div>`;
+  // หมายเหตุ: ไม่ลบ session ออกจาก DB เพราะแค่ clear หน้าจอ
+  // ถ้าอยากลบประวัติถาวร สามารถเพิ่ม endpoint DELETE /api/chat?session_id=xxx ได้ในอนาคต
 }
 
 function usePrompt(text) {
@@ -542,6 +599,9 @@ function escapeAndFormat(text) {
     .replace(/`(.*?)`/g,'<code style="background:var(--egg);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.85em">$1</code>')
     .replace(/\n/g,'<br/>');
 }
+
+// ─── INIT ───
+loadHistory();
 </script>
 </body>
-</html> 
+</html>
